@@ -1,0 +1,173 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Iris Species Predictor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 10px;
+      background:#b4c4ea;
+      /* Teal to Purple */
+      min-height: 100vh;
+    }
+
+
+    .card {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 18px;
+      background: rgba(249, 248, 248, 0.15);
+      /* Transparent white */
+      backdrop-filter: blur(10px);
+      /* Frosted effect */
+      -webkit-backdrop-filter: blur(10px);
+      /* For Safari */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    input[type="number"] {
+      width: 140px;
+      padding: 6px;
+      margin-top: 6px;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      margin-top: 12px;
+      padding: 10px 35px;
+      background: #0069d9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 18px;
+      padding: 12px;
+      background: #f6f9ff;
+      border-radius: 6px;
+    }
+
+    img.spec {
+      max-width: 300px;
+      margin-top: 12px;
+      border-radius: 6px;
+    }
+
+    .small {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    td,
+    th {
+      padding: 6px 10px;
+      border: 1px solid #eee;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🌸 Iris Flower Species Predictor</h1>
+  <div class="card">
+    <form action="{{ url_for('predict') }}" method="post">
+      <div class="row">
+        <div>
+          <label for="sepal_length">Sepal Length (cm)</label>
+          <input required step="0.01" type="number" id="sepal_length" name="sepal_length"
+            value="{{ sepal_length or 5.1 }}">
+        </div>
+
+        <div>
+          <label for="sepal_width">Sepal Width (cm)</label>
+          <input required step="0.01" type="number" id="sepal_width" name="sepal_width"
+            value="{{ sepal_width or 3.5 }}">
+        </div>
+
+        <div>
+          <label for="petal_length">Petal Length (cm)</label>
+          <input required step="0.01" type="number" id="petal_length" name="petal_length"
+            value="{{ petal_length or 1.4 }}">
+        </div>
+
+        <div>
+          <label for="petal_width">Petal Width (cm)</label>
+          <input required step="0.01" type="number" id="petal_width" name="petal_width"
+            value="{{ petal_width or 0.2 }}">
+        </div>
+        <button class="btn" type="submit"> Predict</button>
+      </div>
+
+    </form>
+
+    {% if error %}
+    <div class="result" style="background:#ffecec; color:#a00">Error: {{ error }}</div>
+    {% endif %}
+
+    {% if prediction %}
+    <div class="result" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+
+      <!-- Left: Text Content -->
+      <div style="flex: 1;">
+        <h3>Predicted Species: <strong>{{ prediction }}</strong></h3>
+
+        {% if probabilities %}
+        <div class="small">Prediction probabilities:</div>
+        <table>
+          <tr>
+            <th>Species</th>
+            <th>Probability</th>
+          </tr>
+          {% for cls, p in probabilities %}
+          <tr>
+            <td>{{ cls }}</td>
+            <td>{{ p }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+        {% endif %}
+      </div>
+
+      <!-- Right: Image Content -->
+      <div style="flex: 0 0 auto; text-align: center;">
+        {% if img_filename %}
+        <img src="{{ url_for('static', filename='images/' + img_filename) }}" alt="{{ prediction }}"
+          style="max-width: 250px; border-radius: 6px;">
+        {% else %}
+        <p>No image available for this species.</p>
+        {% endif %}
+      </div>
+
+    </div>
+    {% else %}
+    <div class="small">Enter measurements and click Predict. Example: 5.1, 3.5, 1.4, 0.2</div>
+    {% endif %}
+  </div>
+</body>
+
+</html>
